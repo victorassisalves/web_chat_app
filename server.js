@@ -1,8 +1,13 @@
 "use strict";
-var express = require("express");
-var bodyParser = require("body-parser");
-var app = express();
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+const http = require("http").Server(app)
+const io = require("socket.io")(http);
+
 var PORT = 3000;
+
+
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -20,14 +25,23 @@ app.get(`/mensagens`, (req, res) => {
 
 /**
  * @description Posta as mensagens 
- */
+ * @function io.emit() cria um evento chamado mensagem com conteúdo do body. Vai ser chamado no front end
+*/
 app.post(`/mensagens`, (req, res) => {
     mensagensMock.push(req.body);
-console.log(`TCL: req`, req.body);
+    io.emit('mensagem', req.body)
     res.sendStatus(200)
 });
 
-var server = app.listen(PORT, function () {
+/**
+ * @description Esse método informa toda vez que um novo usuário se conecta
+ */
+io.on('connection', socket => {
+console.log(`TCL: Um usuário se conectou.`);
+
+});
+
+var server = http.listen(PORT, function () {
     console.log("Funcionando na porta " + server.address().port + ".");
 });
 //# sourceMappingURL=server.js.map
