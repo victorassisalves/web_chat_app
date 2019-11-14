@@ -8,10 +8,11 @@
     <br>
     <div class="jumbotron">
         <h1 class="display-4">Web App Chat</h1>
-        <input class="form-control" placeholder="Nome">
-        <input class="form-control" placeholder="Mensagem">
+        <input id="nome" class="form-control" placeholder="Nome">
         <br>
-        <button class="btn btn-success">Enviar</button>
+        <textarea id="mensagem" class="form-control" placeholder="Mensagem"></textarea>
+        <br>
+        <button id="enviar" class="btn btn-success">Enviar</button>
     </div>
     <br>
     <div id="mensagens">
@@ -22,19 +23,26 @@
 <script>
     $(()=>{
         console.log("Página carregada");
-        $(`#enviar`).click(addMessage({nome: "Leonardo", mensagem: "Sou um pau no cú!!!"}))
-        getMessage();
+        $(`#enviar`).click(() => {
+            const mensagem = {nome: $('#nome').val(), mensagem: $('#mensagem').val()};
+            postMensagem(mensagem)
+
+        });
+        getMensagem();
     });
 
-    function addMessage(menssagem) {
-        $("#mensagens").append(`<h4> ${menssagem.nome}: </h4> <p> ${menssagem.mensagem} </p>`)
+    function addMensagem(mensagem) {
+        $("#mensagens").append(`<h4> ${mensagem.nome}: </h4> <p> ${mensagem.mensagem} </p>`)
     };
 
-    function getMessage() {
+    function getMensagem() {
         $.get(`http://localhost:3000/mensagens`, (dados) => {
 
-        console.log(`TCL: getMessage -> dados`, dados)
-            dados.forEach(addMessage);
+        console.log(`TCL: getMensagem -> dados`, dados)
+            dados.forEach(addMensagem);
         });
+    }
+    function postMensagem(mensagem) {
+        $.post(`http://localhost:3000/mensagens`, mensagem);
     }
 </script>
